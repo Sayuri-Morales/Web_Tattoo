@@ -1,0 +1,273 @@
+CREATE DATABASE IF NOT EXISTS EstudioTatuajes; 
+
+USE EstudioTatuajes; 
+
+ 
+
+-- Tabla de Roles 
+
+CREATE TABLE Roles ( 
+
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+
+    nombre VARCHAR(50) NOT NULL 
+
+); 
+
+ 
+
+-- Tabla de Usuarios 
+
+CREATE TABLE Usuarios ( 
+
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+
+    nombre VARCHAR(50) NOT NULL, 
+
+    email VARCHAR(100) UNIQUE NOT NULL, 
+
+    password VARCHAR(255) NOT NULL, 
+
+    rol_id INT, 
+
+    autenticacion_doble_factor BOOLEAN DEFAULT FALSE, 
+
+    FOREIGN KEY (rol_id) REFERENCES Roles(id) 
+
+); 
+
+ 
+
+-- Tabla de Clientes 
+
+CREATE TABLE Clientes ( 
+
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+
+    nombre VARCHAR(50) NOT NULL, 
+
+    email VARCHAR(100) UNIQUE NOT NULL, 
+
+    telefono VARCHAR(20), 
+
+    direccion TEXT 
+
+); 
+
+ 
+
+-- Tabla de Artistas 
+
+CREATE TABLE Artistas ( 
+
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+
+    nombre VARCHAR(50) NOT NULL, 
+
+    especialidades TEXT, 
+
+    biografia TEXT, 
+
+    foto VARCHAR(255), 
+
+    estado BOOLEAN DEFAULT TRUE 
+
+); 
+
+ 
+
+-- Tabla de Cotizaciones 
+
+CREATE TABLE Cotizaciones ( 
+
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+
+    cliente_id INT, 
+
+    artista_id INT, 
+
+    fecha DATETIME, 
+
+    descripcion TEXT, 
+
+    estado ENUM('Pendiente', 'Aprobada', 'Rechazada') DEFAULT 'Pendiente', 
+
+    total DECIMAL(10, 2), 
+
+    FOREIGN KEY (cliente_id) REFERENCES Clientes(id), 
+
+    FOREIGN KEY (artista_id) REFERENCES Artistas(id) 
+
+); 
+
+ 
+
+-- Tabla de Preguntas Frecuentes 
+
+CREATE TABLE Preguntas_Frecuentes ( 
+
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+
+    pregunta TEXT NOT NULL, 
+
+    respuesta TEXT NOT NULL, 
+
+    visitas INT DEFAULT 0, 
+
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+
+    categoria VARCHAR(50) 
+
+); 
+
+ 
+
+-- Tabla de Ofertas y Promociones 
+
+CREATE TABLE Ofertas ( 
+
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+
+    titulo VARCHAR(100), 
+
+    descripcion TEXT, 
+
+    fecha_inicio DATE, 
+
+    fecha_fin DATE, 
+
+    imagen VARCHAR(255), 
+
+    tipo ENUM('Oferta', 'Promocion') 
+
+); 
+
+ 
+
+-- Tabla de Membresías 
+
+CREATE TABLE Membresias ( 
+
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+
+    tipo VARCHAR(50), 
+
+    beneficios TEXT, 
+
+    precio DECIMAL(10, 2), 
+
+    fecha_inicio DATE, 
+
+    fecha_fin DATE, 
+
+    estado BOOLEAN DEFAULT TRUE 
+
+); 
+
+ 
+
+-- Tabla de Encuestas 
+
+CREATE TABLE Encuestas ( 
+
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+
+    cliente_id INT, 
+
+    artista_id INT, 
+
+    fecha DATETIME, 
+
+    calificacion INT CHECK (calificacion >= 1 AND calificacion <= 5), 
+
+    comentarios TEXT, 
+
+    FOREIGN KEY (cliente_id) REFERENCES Clientes(id), 
+
+    FOREIGN KEY (artista_id) REFERENCES Artistas(id) 
+
+); 
+
+ 
+
+-- Tabla de Galerías 
+
+CREATE TABLE Galerias ( 
+
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+
+    artista_id INT, 
+
+    imagen VARCHAR(255), 
+
+    descripcion TEXT, 
+
+    fecha_publicacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+
+    estado BOOLEAN DEFAULT TRUE, 
+
+    FOREIGN KEY (artista_id) REFERENCES Artistas(id) 
+
+); 
+
+ 
+
+-- Tabla de Testimonios 
+
+CREATE TABLE Testimonios ( 
+
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+
+    cliente_id INT, 
+
+    texto TEXT, 
+
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+
+    estado BOOLEAN DEFAULT TRUE, 
+
+    FOREIGN KEY (cliente_id) REFERENCES Clientes(id) 
+
+); 
+
+ 
+
+-- Tabla de Agendas 
+
+CREATE TABLE Agendas ( 
+
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+
+    artista_id INT, 
+
+    fecha_inicio DATETIME, 
+
+    fecha_fin DATETIME, 
+
+    cliente_id INT, 
+
+    estado ENUM('Reservado', 'Confirmado', 'Cancelado') DEFAULT 'Reservado', 
+
+    FOREIGN KEY (artista_id) REFERENCES Artistas(id), 
+
+    FOREIGN KEY (cliente_id) REFERENCES Clientes(id) 
+
+); 
+
+ 
+
+-- Tabla de Cuidados 
+
+CREATE TABLE Cuidados ( 
+
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+
+    titulo VARCHAR(100), 
+
+    descripcion TEXT, 
+
+    fecha_publicacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+
+    estado BOOLEAN DEFAULT TRUE 
+
+); 
