@@ -18,7 +18,6 @@ CREATE TABLE Artistas (
     artista_id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     biografia TEXT,
-    especialidad VARCHAR(100),
     foto_perfil VARCHAR(255),
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -52,6 +51,9 @@ CREATE TABLE Galeria_Fotos (
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (tatuaje_id) REFERENCES Tatuajes(tatuaje_id)
 );
+ALTER TABLE Galeria_Fotos
+ADD COLUMN status ENUM('publicada', 'despublicada') DEFAULT 'despublicada';
+
 
 -- Tabla Promociones
 CREATE TABLE Promociones (
