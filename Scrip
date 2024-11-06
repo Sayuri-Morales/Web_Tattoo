@@ -1,16 +1,19 @@
-CREATE DATABASE IF NOT EXISTS EstudioTatuajes; 
+-- Creación de la base de datos
+CREATE DATABASE IF NOT EXISTS sitio_tatuajes;
+USE sitio_tatuajes;
 
-USE EstudioTatuajes; 
-
+-- Tabla Usuarios
 CREATE TABLE Usuarios (
     usuario_id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(100) UNIQUE NOT NULL,
     contraseña VARCHAR(255) NOT NULL,
     rol ENUM('admin', 'editor') DEFAULT 'editor',
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     estado ENUM('activo', 'inactivo') DEFAULT 'activo'
 );
+
+-- Tabla Artistas
 CREATE TABLE Artistas (
     artista_id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
@@ -19,30 +22,38 @@ CREATE TABLE Artistas (
     foto_perfil VARCHAR(255),
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Tabla Categorias_Tatuajes
 CREATE TABLE Categorias_Tatuajes (
     categoria_id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     descripcion TEXT,
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Tabla Tatuajes
 CREATE TABLE Tatuajes (
     tatuaje_id INT AUTO_INCREMENT PRIMARY KEY,
-    artista_id INT NOT NULL,
-    categoria_id INT NOT NULL,
+    artista_id INT,
+    categoria_id INT,
     descripcion TEXT,
     precio DECIMAL(10,2),
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (artista_id) REFERENCES Artistas(artista_id),
     FOREIGN KEY (categoria_id) REFERENCES Categorias_Tatuajes(categoria_id)
 );
+
+-- Tabla Galeria_Fotos
 CREATE TABLE Galeria_Fotos (
     foto_id INT AUTO_INCREMENT PRIMARY KEY,
-    tatuaje_id INT NOT NULL,
-    ruta_foto VARCHAR(255) NOT NULL,
+    tatuaje_id INT,
+    ruta_foto VARCHAR(255),
     descripcion VARCHAR(255),
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (tatuaje_id) REFERENCES Tatuajes(tatuaje_id)
 );
+
+-- Tabla Promociones
 CREATE TABLE Promociones (
     promocion_id INT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(100) NOT NULL,
@@ -53,13 +64,17 @@ CREATE TABLE Promociones (
     estado ENUM('activo', 'inactivo') DEFAULT 'activo',
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Tabla Testimonios
 CREATE TABLE Testimonios (
     testimonio_id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre_cliente VARCHAR(100) NOT NULL,
-    contenido TEXT NOT NULL,
+    nombre_cliente VARCHAR(100),
+    contenido TEXT,
     foto_cliente VARCHAR(255),
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Tabla Membresias
 CREATE TABLE Membresias (
     membresia_id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
@@ -68,10 +83,12 @@ CREATE TABLE Membresias (
     beneficios TEXT,
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Tabla Citas
 CREATE TABLE Citas (
     cita_id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT NOT NULL,
-    artista_id INT NOT NULL,
+    usuario_id INT,
+    artista_id INT,
     fecha DATETIME NOT NULL,
     estado ENUM('pendiente', 'confirmada', 'completada', 'cancelada') DEFAULT 'pendiente',
     descripcion TEXT,
@@ -79,11 +96,13 @@ CREATE TABLE Citas (
     FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id),
     FOREIGN KEY (artista_id) REFERENCES Artistas(artista_id)
 );
+
+-- Tabla Cotizaciones
 CREATE TABLE Cotizaciones (
     cotizacion_id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT NOT NULL,
-    artista_id INT NOT NULL,
-    tatuaje_id INT NOT NULL,
+    usuario_id INT,
+    artista_id INT,
+    tatuaje_id INT,
     descripcion TEXT,
     precio_estimado DECIMAL(10,2),
     estado ENUM('pendiente', 'aceptada', 'rechazada') DEFAULT 'pendiente',
@@ -92,15 +111,19 @@ CREATE TABLE Cotizaciones (
     FOREIGN KEY (artista_id) REFERENCES Artistas(artista_id),
     FOREIGN KEY (tatuaje_id) REFERENCES Tatuajes(tatuaje_id)
 );
+
+-- Tabla Tarjetas_Regalo
 CREATE TABLE Tarjetas_Regalo (
     tarjeta_id INT AUTO_INCREMENT PRIMARY KEY,
-    codigo VARCHAR(50) NOT NULL UNIQUE,
+    codigo VARCHAR(50) UNIQUE NOT NULL,
     valor DECIMAL(10,2) NOT NULL,
     estado ENUM('activa', 'usada', 'expirada') DEFAULT 'activa',
     fecha_emision DATE,
     fecha_expiracion DATE,
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Tabla Preguntas_Frecuentes
 CREATE TABLE Preguntas_Frecuentes (
     faq_id INT AUTO_INCREMENT PRIMARY KEY,
     pregunta VARCHAR(255) NOT NULL,
@@ -108,26 +131,32 @@ CREATE TABLE Preguntas_Frecuentes (
     categoria VARCHAR(100),
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Tabla Cuidados_Tatuaje
 CREATE TABLE Cuidados_Tatuaje (
     cuidado_id INT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(100) NOT NULL,
-    descripcion TEXT NOT NULL,
+    descripcion TEXT,
     imagen VARCHAR(255),
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Tabla Chatbot_Mensajes
 CREATE TABLE Chatbot_Mensajes (
     mensaje_id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT,
     mensaje_usuario TEXT NOT NULL,
-    respuesta_bot TEXT NOT NULL,
+    respuesta_bot TEXT,
     fecha_hora DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id)
 );
+
+-- Tabla Ventas_Articulos
 CREATE TABLE Ventas_Articulos (
     articulo_id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     descripcion TEXT,
-    precio DECIMAL(10,2) NOT NULL,
+    precio DECIMAL(10,2),
     stock INT DEFAULT 0,
     imagen VARCHAR(255),
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
