@@ -52,7 +52,7 @@ CREATE TABLE Galeria_Fotos (
     FOREIGN KEY (tatuaje_id) REFERENCES Tatuajes(tatuaje_id)
 );
 ALTER TABLE Galeria_Fotos
-ADD COLUMN estado ENUM('publicada', 'despublicada') DEFAULT 'despublicada';
+ADD COLUMN status ENUM('publicada', 'despublicada') DEFAULT 'despublicada';
 
 
 -- Tabla Promociones
