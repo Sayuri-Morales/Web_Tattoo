@@ -2,272 +2,133 @@ CREATE DATABASE IF NOT EXISTS EstudioTatuajes;
 
 USE EstudioTatuajes; 
 
- 
-
--- Tabla de Roles 
-
-CREATE TABLE Roles ( 
-
-    id INT AUTO_INCREMENT PRIMARY KEY, 
-
-    nombre VARCHAR(50) NOT NULL 
-
-); 
-
- 
-
--- Tabla de Usuarios 
-
-CREATE TABLE Usuarios ( 
-
-    id INT AUTO_INCREMENT PRIMARY KEY, 
-
-    nombre VARCHAR(50) NOT NULL, 
-
-    email VARCHAR(100) UNIQUE NOT NULL, 
-
-    password VARCHAR(255) NOT NULL, 
-
-    rol_id INT, 
-
-    autenticacion_doble_factor BOOLEAN DEFAULT FALSE, 
-
-    FOREIGN KEY (rol_id) REFERENCES Roles(id) 
-
-); 
-
- 
-
--- Tabla de Clientes 
-
-CREATE TABLE Clientes ( 
-
-    id INT AUTO_INCREMENT PRIMARY KEY, 
-
-    nombre VARCHAR(50) NOT NULL, 
-
-    email VARCHAR(100) UNIQUE NOT NULL, 
-
-    telefono VARCHAR(20), 
-
-    direccion TEXT 
-
-); 
-
- 
-
--- Tabla de Artistas 
-
-CREATE TABLE Artistas ( 
-
-    id INT AUTO_INCREMENT PRIMARY KEY, 
-
-    nombre VARCHAR(50) NOT NULL, 
-
-    especialidades TEXT, 
-
-    biografia TEXT, 
-
-    foto VARCHAR(255), 
-
-    estado BOOLEAN DEFAULT TRUE 
-
-); 
-
- 
-
--- Tabla de Cotizaciones 
-
-CREATE TABLE Cotizaciones ( 
-
-    id INT AUTO_INCREMENT PRIMARY KEY, 
-
-    cliente_id INT, 
-
-    artista_id INT, 
-
-    fecha DATETIME, 
-
-    descripcion TEXT, 
-
-    estado ENUM('Pendiente', 'Aprobada', 'Rechazada') DEFAULT 'Pendiente', 
-
-    total DECIMAL(10, 2), 
-
-    FOREIGN KEY (cliente_id) REFERENCES Clientes(id), 
-
-    FOREIGN KEY (artista_id) REFERENCES Artistas(id) 
-
-); 
-
- 
-
--- Tabla de Preguntas Frecuentes 
-
-CREATE TABLE Preguntas_Frecuentes ( 
-
-    id INT AUTO_INCREMENT PRIMARY KEY, 
-
-    pregunta TEXT NOT NULL, 
-
-    respuesta TEXT NOT NULL, 
-
-    visitas INT DEFAULT 0, 
-
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-
-    categoria VARCHAR(50) 
-
-); 
-
- 
-
--- Tabla de Ofertas y Promociones 
-
-CREATE TABLE Ofertas ( 
-
-    id INT AUTO_INCREMENT PRIMARY KEY, 
-
-    titulo VARCHAR(100), 
-
-    descripcion TEXT, 
-
-    fecha_inicio DATE, 
-
-    fecha_fin DATE, 
-
-    imagen VARCHAR(255), 
-
-    tipo ENUM('Oferta', 'Promocion') 
-
-); 
-
- 
-
--- Tabla de Membresías 
-
-CREATE TABLE Membresias ( 
-
-    id INT AUTO_INCREMENT PRIMARY KEY, 
-
-    tipo VARCHAR(50), 
-
-    beneficios TEXT, 
-
-    precio DECIMAL(10, 2), 
-
-    fecha_inicio DATE, 
-
-    fecha_fin DATE, 
-
-    estado BOOLEAN DEFAULT TRUE 
-
-); 
-
- 
-
--- Tabla de Encuestas 
-
-CREATE TABLE Encuestas ( 
-
-    id INT AUTO_INCREMENT PRIMARY KEY, 
-
-    cliente_id INT, 
-
-    artista_id INT, 
-
-    fecha DATETIME, 
-
-    calificacion INT CHECK (calificacion >= 1 AND calificacion <= 5), 
-
-    comentarios TEXT, 
-
-    FOREIGN KEY (cliente_id) REFERENCES Clientes(id), 
-
-    FOREIGN KEY (artista_id) REFERENCES Artistas(id) 
-
-); 
-
- 
-
--- Tabla de Galerías 
-
-CREATE TABLE Galerias ( 
-
-    id INT AUTO_INCREMENT PRIMARY KEY, 
-
-    artista_id INT, 
-
-    imagen VARCHAR(255), 
-
-    descripcion TEXT, 
-
-    fecha_publicacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-
-    estado BOOLEAN DEFAULT TRUE, 
-
-    FOREIGN KEY (artista_id) REFERENCES Artistas(id) 
-
-); 
-
- 
-
--- Tabla de Testimonios 
-
-CREATE TABLE Testimonios ( 
-
-    id INT AUTO_INCREMENT PRIMARY KEY, 
-
-    cliente_id INT, 
-
-    texto TEXT, 
-
-    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-
-    estado BOOLEAN DEFAULT TRUE, 
-
-    FOREIGN KEY (cliente_id) REFERENCES Clientes(id) 
-
-); 
-
- 
-
--- Tabla de Agendas 
-
-CREATE TABLE Agendas ( 
-
-    id INT AUTO_INCREMENT PRIMARY KEY, 
-
-    artista_id INT, 
-
-    fecha_inicio DATETIME, 
-
-    fecha_fin DATETIME, 
-
-    cliente_id INT, 
-
-    estado ENUM('Reservado', 'Confirmado', 'Cancelado') DEFAULT 'Reservado', 
-
-    FOREIGN KEY (artista_id) REFERENCES Artistas(id), 
-
-    FOREIGN KEY (cliente_id) REFERENCES Clientes(id) 
-
-); 
-
- 
-
--- Tabla de Cuidados 
-
-CREATE TABLE Cuidados ( 
-
-    id INT AUTO_INCREMENT PRIMARY KEY, 
-
-    titulo VARCHAR(100), 
-
-    descripcion TEXT, 
-
-    fecha_publicacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-
-    estado BOOLEAN DEFAULT TRUE 
-
-); 
+CREATE TABLE Usuarios (
+    usuario_id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    contraseña VARCHAR(255) NOT NULL,
+    rol ENUM('admin', 'editor') DEFAULT 'editor',
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    estado ENUM('activo', 'inactivo') DEFAULT 'activo'
+);
+CREATE TABLE Artistas (
+    artista_id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    biografia TEXT,
+    especialidad VARCHAR(100),
+    foto_perfil VARCHAR(255),
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE Categorias_Tatuajes (
+    categoria_id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE Tatuajes (
+    tatuaje_id INT AUTO_INCREMENT PRIMARY KEY,
+    artista_id INT NOT NULL,
+    categoria_id INT NOT NULL,
+    descripcion TEXT,
+    precio DECIMAL(10,2),
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (artista_id) REFERENCES Artistas(artista_id),
+    FOREIGN KEY (categoria_id) REFERENCES Categorias_Tatuajes(categoria_id)
+);
+CREATE TABLE Galeria_Fotos (
+    foto_id INT AUTO_INCREMENT PRIMARY KEY,
+    tatuaje_id INT NOT NULL,
+    ruta_foto VARCHAR(255) NOT NULL,
+    descripcion VARCHAR(255),
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (tatuaje_id) REFERENCES Tatuajes(tatuaje_id)
+);
+CREATE TABLE Promociones (
+    promocion_id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    descuento DECIMAL(5,2),
+    fecha_inicio DATE,
+    fecha_fin DATE,
+    estado ENUM('activo', 'inactivo') DEFAULT 'activo',
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE Testimonios (
+    testimonio_id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_cliente VARCHAR(100) NOT NULL,
+    contenido TEXT NOT NULL,
+    foto_cliente VARCHAR(255),
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE Membresias (
+    membresia_id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    precio DECIMAL(10,2),
+    beneficios TEXT,
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE Citas (
+    cita_id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    artista_id INT NOT NULL,
+    fecha DATETIME NOT NULL,
+    estado ENUM('pendiente', 'confirmada', 'completada', 'cancelada') DEFAULT 'pendiente',
+    descripcion TEXT,
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id),
+    FOREIGN KEY (artista_id) REFERENCES Artistas(artista_id)
+);
+CREATE TABLE Cotizaciones (
+    cotizacion_id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    artista_id INT NOT NULL,
+    tatuaje_id INT NOT NULL,
+    descripcion TEXT,
+    precio_estimado DECIMAL(10,2),
+    estado ENUM('pendiente', 'aceptada', 'rechazada') DEFAULT 'pendiente',
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id),
+    FOREIGN KEY (artista_id) REFERENCES Artistas(artista_id),
+    FOREIGN KEY (tatuaje_id) REFERENCES Tatuajes(tatuaje_id)
+);
+CREATE TABLE Tarjetas_Regalo (
+    tarjeta_id INT AUTO_INCREMENT PRIMARY KEY,
+    codigo VARCHAR(50) NOT NULL UNIQUE,
+    valor DECIMAL(10,2) NOT NULL,
+    estado ENUM('activa', 'usada', 'expirada') DEFAULT 'activa',
+    fecha_emision DATE,
+    fecha_expiracion DATE,
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE Preguntas_Frecuentes (
+    faq_id INT AUTO_INCREMENT PRIMARY KEY,
+    pregunta VARCHAR(255) NOT NULL,
+    respuesta TEXT NOT NULL,
+    categoria VARCHAR(100),
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE Cuidados_Tatuaje (
+    cuidado_id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(100) NOT NULL,
+    descripcion TEXT NOT NULL,
+    imagen VARCHAR(255),
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE Chatbot_Mensajes (
+    mensaje_id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT,
+    mensaje_usuario TEXT NOT NULL,
+    respuesta_bot TEXT NOT NULL,
+    fecha_hora DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id)
+);
+CREATE TABLE Ventas_Articulos (
+    articulo_id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    precio DECIMAL(10,2) NOT NULL,
+    stock INT DEFAULT 0,
+    imagen VARCHAR(255),
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
+);
