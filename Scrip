@@ -13,14 +13,15 @@ CREATE TABLE Usuarios (
     estado ENUM('activo', 'inactivo') DEFAULT 'activo'
 );
 
--- Tabla Artistas
 CREATE TABLE Artistas (
     artista_id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     biografia TEXT,
     foto_perfil VARCHAR(255),
-    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    cedula VARCHAR(20) NOT NULL
 );
+
 
 -- Tabla Categorias_Tatuajes
 CREATE TABLE Categorias_Tatuajes (
