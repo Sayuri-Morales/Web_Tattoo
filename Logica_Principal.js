@@ -1,9 +1,13 @@
 // Librerías
-const path = require('path');
 const fs = require('fs');
-const mysql = require('mysql2');
+const path = require('path');
 const http = require('http');
+const mysql = require('mysql2');
+const express = require('express');
 const querystring = require('querystring');
+
+// Inicializa la aplicación de express
+const app = express();
 
 // Conexión a la base de datos
 const connection = mysql.createConnection({
@@ -21,16 +25,10 @@ connection.connect(error => {
     console.log('Conexión a la base de datos establecida...');
 });
 
-// Creación de Servidor y Escucha de Peticiones
-const servidor = http.createServer((peticion, respuesta) => {
-    const url = new URL('http://localhost:8888' + peticion.url);
-    let camino = 'Public' + url.pathname;
-    if (camino == 'Public/') camino = 'Public/index.html';
-    procesarPeticion(peticion, respuesta, camino);
-});
-servidor.listen(8888);
-// ---------------------------------------------------------------------------------------------
-// Diccionarios con objetos
+// Configurar express para servir archivos estáticos
+app.use(express.static(path.join(__dirname, 'Public')));
+
+// Diccionario de tipos MIME
 const mime = {
     'html': 'text/html',
     'css': 'text/css',
@@ -40,40 +38,87 @@ const mime = {
     'mp3': 'audio/mpeg3',
     'mp4': 'video/mp4'
 };
-// ---------------------------------------------------------------------------------------------
-function procesarPeticion(peticion, respuesta, camino) {
-    switch (camino) {
-        case 'Archivos/RegistroCliente': {
-            RegistroCliente(peticion, respuesta);
-            break;
+// Configurar Express para manejar datos JSON
+app.use(express.json());
+
+// Ruta para el login
+app.post('/api/login', (req, res) => {
+    const { email, password } = req.body;
+
+    // Consultar el usuario en la base de datos
+    connection.query('SELECT * FROM Usuarios WHERE email = ?', [email], (error, results) => {
+        if (error) {
+            console.error('Error al consultar la base de datos:', error);
+            return res.status(500).json({ success: false, message: 'Error en el servidor' });
         }
-        case 'Archivos/VistaDetalle': {
-            VistaDetalle(peticion, respuesta);
-            break;
+
+        if (results.length === 0) {
+            return res.json({ success: false, message: 'Correo no encontrado' });
         }
-        default: {
-            fs.stat(camino, error => {
-                if (!error) {
-                    fs.readFile(camino, (error, contenido) => {
-                        if (error) {
-                            respuesta.writeHead(500, { 'Content-Type': 'text/plain' });
-                            respuesta.write('Error interno');
-                            respuesta.end();
-                        } else {
-                            const vec = camino.split('.');
-                            const extension = vec[vec.length - 1];
-                            const mimearchivo = mime[extension];
-                            respuesta.writeHead(200, { 'Content-Type': mimearchivo });
-                            respuesta.write(contenido);
-                            respuesta.end();
-                        }
-                    });
-                } else {
-                    respuesta.writeHead(404, { 'Content-Type': 'text/html' });
-                    respuesta.write('<!doctype html><html><head></head><body>Recurso Inexistente</body></html>');
-                    respuesta.end();
-                }
-            });
+
+        const user = results[0];
+
+        // Validar la contraseña
+        if (user.contraseña !== password) {
+            return res.json({ success: false, message: 'Contraseña incorrecta' });
         }
-    }
-}
+
+        // Validar si el usuario está activo
+        if (user.estado !== 'activo') {
+            return res.json({ success: false, message: 'Cuenta desactivada' });
+        }
+
+        // Devolver la información del usuario
+        res.json({
+            success: true,
+            nombre: user.nombre,
+            rol: user.rol
+        });
+    });
+});
+// ----------------------------------------------------------------------------------
+// Ruta para obtener los datos de los artistas
+app.get('/api/artistas', (req, res) => {
+    connection.query('SELECT * FROM Artistas', (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+        res.json(results);
+    });
+});
+// ----------------------------------------------------------------------------------
+// Ruta para obtener los tatuajes de un artista específico
+app.get('/api/tatuajes/:cedula', (req, res) => {
+    const cedula = req.params.cedula;
+    
+    // Obtener el artista por cédula
+    connection.query('SELECT * FROM Artistas WHERE cedula = ?', [cedula], (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+        
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'Artista no encontrado' });
+        }
+        
+        const artista_id = results[0].artista_id;
+        const nombre_artista = results[0].nombre; // Obtén el nombre del artista
+        
+        // Obtener los tatuajes del artista
+        connection.query('SELECT * FROM Tatuajes WHERE artista_id = ?', [artista_id], (error, tatuajes) => {
+            if (error) {
+                return res.status(500).json({ error: error.message });
+            }
+            // Envía el nombre del artista junto con los tatuajes
+            res.json({ nombre_artista, tatuajes });
+        });
+    });
+});
+// ----------------------------------------------------------------------------------
+// Crear el servidor y usar la app de express como manejador de peticiones
+const servidor = http.createServer(app);
+
+// Escuchar en el puerto 8888
+servidor.listen(8888, () => {
+    console.log('Servidor escuchando en http://localhost:8888');
+});

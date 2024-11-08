@@ -22,7 +22,6 @@ CREATE TABLE Artistas (
     cedula VARCHAR(20) NOT NULL
 );
 
-
 -- Tabla Categorias_Tatuajes
 CREATE TABLE Categorias_Tatuajes (
     categoria_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -36,6 +35,7 @@ CREATE TABLE Tatuajes (
     tatuaje_id INT AUTO_INCREMENT PRIMARY KEY,
     artista_id INT,
     categoria_id INT,
+    imagen_tatuaje VARCHAR(255),
     descripcion TEXT,
     precio DECIMAL(10,2),
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -54,7 +54,6 @@ CREATE TABLE Galeria_Fotos (
 );
 ALTER TABLE Galeria_Fotos
 ADD COLUMN status ENUM('publicada', 'despublicada') DEFAULT 'despublicada';
-
 
 -- Tabla Promociones
 CREATE TABLE Promociones (
@@ -164,3 +163,50 @@ CREATE TABLE Ventas_Articulos (
     imagen VARCHAR(255),
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Insertar datos en la tabla Usuarios
+INSERT INTO Usuarios (nombre, email, contraseña, rol, estado) VALUES
+('Juan Pérez', 'juan.perez@example.com', 'contraseña123', 'admin', 'activo'),
+('Ana García', 'ana.garcia@example.com', 'contraseña456', 'editor', 'activo'),
+('Carlos Ruiz', 'carlos.ruiz@example.com', 'contraseña789', 'editor', 'inactivo'),
+('Laura Sánchez', 'laura.sanchez@example.com', 'contraseña012', 'editor', 'activo');
+
+-- Insertar datos en la tabla Artistas
+INSERT INTO Artistas (nombre, biografia, foto_perfil, cedula) VALUES
+('Juan Pérez', 'Tatuador con 10 años de experiencia, especializado en estilo realista.', '/Images/Artistas/FotoTatuador.jpeg', '123456789'),
+('Ana García', 'Tatuadora con una pasión por los tatuajes geométricos.', '/Images/Artistas/FotoTatuador.jpeg', '987654321'),
+('Carlos Ruiz', 'Especialista en tatuajes de estilo tradicional americano.', '/Images/Artistas/FotoTatuador.jpeg', '456789123'),
+('Laura Sánchez', 'Artista del tatuaje con un enfoque en el arte acuarela.', '/Images/Artistas/FotoTatuador.jpeg', '321654987'),
+('David Martínez', 'Tatuador de línea fina y detalles intrincados.', '/Images/Artistas/FotoTatuador.jpeg', '654123789'),
+('María López', 'Tatuadora famosa por sus diseños de retratos realistas.', '/Images/Artistas/FotoTatuador.jpeg', '789123456'),
+('Pedro González', 'Creador de tatuajes inspirados en el arte japonés.', '/Images/Artistas/FotoTatuador.jpeg', '987321654'),
+('Lucía Fernández', 'Artista del tatuaje con enfoque en tatuajes abstractos y geométricos.', '/Images/Artistas/FotoTatuador.jpeg', '321987654'),
+('Javier Morales', 'Tatuador reconocido por su habilidad en el estilo neo-tradicional.', '/Images/Artistas/FotoTatuador.jpeg', '654987123'),
+('Sofía Rodríguez', 'Artista del tatuaje con especialización en retratos y sombras.', '/Images/Artistas/FotoTatuador.jpeg', '987654321');
+
+-- Insertar datos en la tabla Categorias_Tatuajes
+INSERT INTO Categorias_Tatuajes (nombre, descripcion) VALUES
+('Realista', 'Tatuajes de estilo realista, con gran detalle y sombreado.'),
+('Geométrico', 'Tatuajes que combinan líneas precisas y formas geométricas.'),
+('Tradicional', 'Estilo de tatuaje clásico con contornos gruesos y colores sólidos.'),
+('Acuarela', 'Tatuajes con efecto de acuarela, creando sombras y colores difusos.'),
+('Minimalista', 'Diseños simples y pequeños, enfocados en líneas limpias y poco detalle.'),
+('Japonés', 'Estilo que incluye símbolos y patrones de la cultura japonesa.'),
+('Abstracto', 'Tatuajes que juegan con formas no representativas y creativas.'),
+('Neo-Tradicional', 'Una mezcla de estilo tradicional y modernidad, con detalles extra.'),
+('Tatuajes de retrato', 'Tatuajes realistas de personas o animales, con enfoque en el detalle facial.'),
+('Floral', 'Diseños de tatuajes que utilizan elementos de la naturaleza como flores.');
+
+-- Insertar datos en la tabla Tatuajes
+INSERT INTO Tatuajes (artista_id, categoria_id, imagen_tatuaje, descripcion, precio) VALUES
+(1, 1, '/Images/Artistas/FotoTatuador.jpeg', 'Tatuaje realista de una flor de loto.', 120.00),
+(2, 2, '/Images/Artistas/FotoTatuador.jpeg', 'Tatuaje geométrico abstracto.', 150.00),
+(3, 3, '/Images/Artistas/FotoTatuador.jpeg', 'Tatuaje tradicional de una calavera americana.', 100.00),
+(4, 4, '/Images/Artistas/FotoTatuador.jpeg', 'Tatuaje estilo acuarela de un pájaro en vuelo.', 200.00),
+(5, 5, '/Images/Artistas/FotoTatuador.jpeg', 'Tatuaje minimalista de una montaña.', 80.00),
+(6, 6, '/Images/Artistas/FotoTatuador.jpeg', 'Tatuaje japonés de un dragón.', 250.00),
+(7, 7, '/Images/Artistas/FotoTatuador.jpeg', 'Tatuaje abstracto con líneas curvadas.', 180.00),
+(8, 8, '/Images/Artistas/FotoTatuador.jpeg', 'Tatuaje neo-tradicional de una rosa.', 160.00),
+(9, 9, '/Images/Artistas/FotoTatuador.jpeg', 'Tatuaje de retrato realista de un animal.', 220.00),
+(10, 10, '/Images/Artistas/FotoTatuador.jpeg', 'Tatuaje floral de una peonía.', 90.00),
+(1, 1, '/Images/Artistas/FotoTatuador.jpeg', 'Tatuaje realista de un paisaje nocturno.', 130.00);
