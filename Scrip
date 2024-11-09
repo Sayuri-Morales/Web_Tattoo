@@ -1,214 +1,456 @@
--- Creación de la base de datos
-CREATE DATABASE IF NOT EXISTS sitio_tatuajes;
-USE sitio_tatuajes;
+-- MySQL dump 10.13  Distrib 8.0.38, for Win64 (x86_64)
+--
+-- Host: localhost    Database: sitio_tatuajes
+-- ------------------------------------------------------
+-- Server version	8.0.38
 
--- Tabla Usuarios
-CREATE TABLE Usuarios (
-    usuario_id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    contraseña VARCHAR(255) NOT NULL,
-    rol ENUM('admin', 'editor') DEFAULT 'editor',
-    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-    estado ENUM('activo', 'inactivo') DEFAULT 'activo'
-);
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-CREATE TABLE Artistas (
-    artista_id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    biografia TEXT,
-    foto_perfil VARCHAR(255),
-    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-    cedula VARCHAR(20) NOT NULL
-);
+--
+-- Table structure for table `artistas`
+--
 
--- Tabla Categorias_Tatuajes
-CREATE TABLE Categorias_Tatuajes (
-    categoria_id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    descripcion TEXT,
-    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+DROP TABLE IF EXISTS `artistas`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `artistas` (
+  `artista_id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) NOT NULL,
+  `biografia` text,
+  `especialidad` varchar(100) DEFAULT NULL,
+  `foto_perfil` varchar(255) DEFAULT NULL,
+  `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
+  `cedula` varchar(20) NOT NULL,
+  PRIMARY KEY (`artista_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- Tabla Tatuajes
-CREATE TABLE Tatuajes (
-    tatuaje_id INT AUTO_INCREMENT PRIMARY KEY,
-    artista_id INT,
-    categoria_id INT,
-    imagen_tatuaje VARCHAR(255),
-    descripcion TEXT,
-    precio DECIMAL(10,2),
-    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (artista_id) REFERENCES Artistas(artista_id),
-    FOREIGN KEY (categoria_id) REFERENCES Categorias_Tatuajes(categoria_id)
-);
+--
+-- Dumping data for table `artistas`
+--
 
--- Tabla Galeria_Fotos
-CREATE TABLE Galeria_Fotos (
-    foto_id INT AUTO_INCREMENT PRIMARY KEY,
-    tatuaje_id INT,
-    ruta_foto VARCHAR(255),
-    descripcion VARCHAR(255),
-    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (tatuaje_id) REFERENCES Tatuajes(tatuaje_id)
-);
-ALTER TABLE Galeria_Fotos
-ADD COLUMN status ENUM('publicada', 'despublicada') DEFAULT 'despublicada';
+LOCK TABLES `artistas` WRITE;
+/*!40000 ALTER TABLE `artistas` DISABLE KEYS */;
+INSERT INTO `artistas` VALUES (1,'Ana Torres','Especialista en tatuajes geométricos y minimalistas.','Geométrico','ana_torres.jpg','2024-11-01 12:00:00','123456789'),(2,'Carlos Rojas','Artista de tatuajes de retratos y realismo.','Realismo','carlos_rojas.jpg','2024-11-02 13:30:00','987654321'),(3,'Lucía Fernández','Tatuajes de estilo acuarela y abstracto.','Acuarela','lucia_fernandez.jpg','2024-11-03 14:00:00','456123789'),(41,'Sayuri Morales','uy','asd','1731087898415.jpg','2024-11-08 11:44:58','uy'),(42,'mo','ga','N/A',NULL,'2024-11-08 16:34:35','123456789'),(43,'Miguel Ángel','Tatuador profesional especializado en estilos tradicionales.','Tradicional','miguel.jpg','2024-11-08 16:42:16','1234567890'),(44,'Sofia López','Tatuadora con enfoque en realismo y retratos.','Realismo','sofia.jpg','2024-11-08 16:42:16','9876543210');
+/*!40000 ALTER TABLE `artistas` ENABLE KEYS */;
+UNLOCK TABLES;
 
--- Tabla Promociones
-CREATE TABLE Promociones (
-    promocion_id INT AUTO_INCREMENT PRIMARY KEY,
-    titulo VARCHAR(100) NOT NULL,
-    descripcion TEXT,
-    descuento DECIMAL(5,2),
-    fecha_inicio DATE,
-    fecha_fin DATE,
-    estado ENUM('activo', 'inactivo') DEFAULT 'activo',
-    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+--
+-- Table structure for table `categorias_tatuajes`
+--
 
--- Tabla Testimonios
-CREATE TABLE Testimonios (
-    testimonio_id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre_cliente VARCHAR(100),
-    contenido TEXT,
-    foto_cliente VARCHAR(255),
-    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+DROP TABLE IF EXISTS `categorias_tatuajes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `categorias_tatuajes` (
+  `categoria_id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) NOT NULL,
+  `descripcion` text,
+  `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`categoria_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- Tabla Membresias
-CREATE TABLE Membresias (
-    membresia_id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    descripcion TEXT,
-    precio DECIMAL(10,2),
-    beneficios TEXT,
-    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+--
+-- Dumping data for table `categorias_tatuajes`
+--
 
-CREATE TABLE agenda_artista (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    cotizacion_id INT NOT NULL,
-    artista_id INT NOT NULL,
-    fecha DATE NOT NULL,
-    hora TIME NOT NULL,
-    cliente VARCHAR(255),
-    status VARCHAR(50),
-    membresia VARCHAR(50),
-    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (cotizacion_id) REFERENCES cotizaciones(cotizacion_id)
-);
+LOCK TABLES `categorias_tatuajes` WRITE;
+/*!40000 ALTER TABLE `categorias_tatuajes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `categorias_tatuajes` ENABLE KEYS */;
+UNLOCK TABLES;
 
+--
+-- Table structure for table `chatbot_mensajes`
+--
 
--- Tabla Cotizaciones
-CREATE TABLE Cotizaciones (
-    cotizacion_id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT,
-    artista_id INT,
-    tatuaje_id INT,
-    descripcion TEXT,
-    precio_estimado DECIMAL(10,2),
-    estado ENUM('pendiente', 'aceptada', 'rechazada') DEFAULT 'pendiente',
-    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id),
-    FOREIGN KEY (artista_id) REFERENCES Artistas(artista_id),
-    FOREIGN KEY (tatuaje_id) REFERENCES Tatuajes(tatuaje_id)
-);
+DROP TABLE IF EXISTS `chatbot_mensajes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `chatbot_mensajes` (
+  `mensaje_id` int NOT NULL AUTO_INCREMENT,
+  `usuario_id` int DEFAULT NULL,
+  `mensaje_usuario` text NOT NULL,
+  `respuesta_bot` text,
+  `fecha_hora` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`mensaje_id`),
+  KEY `usuario_id` (`usuario_id`),
+  CONSTRAINT `chatbot_mensajes_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`usuario_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- Tabla Tarjetas_Regalo
-CREATE TABLE Tarjetas_Regalo (
-    tarjeta_id INT AUTO_INCREMENT PRIMARY KEY,
-    codigo VARCHAR(50) UNIQUE NOT NULL,
-    valor DECIMAL(10,2) NOT NULL,
-    estado ENUM('activa', 'usada', 'expirada') DEFAULT 'activa',
-    fecha_emision DATE,
-    fecha_expiracion DATE,
-    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+--
+-- Dumping data for table `chatbot_mensajes`
+--
 
--- Tabla Preguntas_Frecuentes
-CREATE TABLE Preguntas_Frecuentes (
-    faq_id INT AUTO_INCREMENT PRIMARY KEY,
-    pregunta VARCHAR(255) NOT NULL,
-    respuesta TEXT NOT NULL,
-    categoria VARCHAR(100),
-    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+LOCK TABLES `chatbot_mensajes` WRITE;
+/*!40000 ALTER TABLE `chatbot_mensajes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `chatbot_mensajes` ENABLE KEYS */;
+UNLOCK TABLES;
 
--- Tabla Cuidados_Tatuaje
-CREATE TABLE Cuidados_Tatuaje (
-    cuidado_id INT AUTO_INCREMENT PRIMARY KEY,
-    titulo VARCHAR(100) NOT NULL,
-    descripcion TEXT,
-    imagen VARCHAR(255),
-    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+--
+-- Table structure for table `citas`
+--
 
--- Tabla Chatbot_Mensajes
-CREATE TABLE Chatbot_Mensajes (
-    mensaje_id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT,
-    mensaje_usuario TEXT NOT NULL,
-    respuesta_bot TEXT,
-    fecha_hora DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id)
-);
+DROP TABLE IF EXISTS `citas`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `citas` (
+  `cita_id` int NOT NULL AUTO_INCREMENT,
+  `usuario_id` int DEFAULT NULL,
+  `artista_id` int DEFAULT NULL,
+  `fecha` datetime NOT NULL,
+  `estado` enum('pendiente','confirmada','completada','cancelada') DEFAULT 'pendiente',
+  `descripcion` text,
+  `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`cita_id`),
+  KEY `usuario_id` (`usuario_id`),
+  KEY `artista_id` (`artista_id`),
+  CONSTRAINT `citas_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`usuario_id`),
+  CONSTRAINT `citas_ibfk_2` FOREIGN KEY (`artista_id`) REFERENCES `artistas` (`artista_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- Tabla Ventas_Articulos
-CREATE TABLE Ventas_Articulos (
-    articulo_id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    descripcion TEXT,
-    precio DECIMAL(10,2),
-    stock INT DEFAULT 0,
-    imagen VARCHAR(255),
-    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+--
+-- Dumping data for table `citas`
+--
 
--- Insertar datos en la tabla Usuarios
-INSERT INTO Usuarios (nombre, email, contraseña, rol, estado) VALUES
-('Juan Pérez', 'juan.perez@example.com', 'contraseña123', 'admin', 'activo'),
-('Ana García', 'ana.garcia@example.com', 'contraseña456', 'editor', 'activo'),
-('Carlos Ruiz', 'carlos.ruiz@example.com', 'contraseña789', 'editor', 'inactivo'),
-('Laura Sánchez', 'laura.sanchez@example.com', 'contraseña012', 'editor', 'activo');
+LOCK TABLES `citas` WRITE;
+/*!40000 ALTER TABLE `citas` DISABLE KEYS */;
+/*!40000 ALTER TABLE `citas` ENABLE KEYS */;
+UNLOCK TABLES;
 
--- Insertar datos en la tabla Artistas
-INSERT INTO Artistas (nombre, biografia, foto_perfil, cedula) VALUES
-('Juan Pérez', 'Tatuador con 10 años de experiencia, especializado en estilo realista.', '/Images/Artistas/FotoTatuador.jpeg', '123456789'),
-('Ana García', 'Tatuadora con una pasión por los tatuajes geométricos.', '/Images/Artistas/FotoTatuador.jpeg', '987654321'),
-('Carlos Ruiz', 'Especialista en tatuajes de estilo tradicional americano.', '/Images/Artistas/FotoTatuador.jpeg', '456789123'),
-('Laura Sánchez', 'Artista del tatuaje con un enfoque en el arte acuarela.', '/Images/Artistas/FotoTatuador.jpeg', '321654987'),
-('David Martínez', 'Tatuador de línea fina y detalles intrincados.', '/Images/Artistas/FotoTatuador.jpeg', '654123789'),
-('María López', 'Tatuadora famosa por sus diseños de retratos realistas.', '/Images/Artistas/FotoTatuador.jpeg', '789123456'),
-('Pedro González', 'Creador de tatuajes inspirados en el arte japonés.', '/Images/Artistas/FotoTatuador.jpeg', '987321654'),
-('Lucía Fernández', 'Artista del tatuaje con enfoque en tatuajes abstractos y geométricos.', '/Images/Artistas/FotoTatuador.jpeg', '321987654'),
-('Javier Morales', 'Tatuador reconocido por su habilidad en el estilo neo-tradicional.', '/Images/Artistas/FotoTatuador.jpeg', '654987123'),
-('Sofía Rodríguez', 'Artista del tatuaje con especialización en retratos y sombras.', '/Images/Artistas/FotoTatuador.jpeg', '987654321');
+--
+-- Table structure for table `cotizaciones`
+--
 
--- Insertar datos en la tabla Categorias_Tatuajes
-INSERT INTO Categorias_Tatuajes (nombre, descripcion) VALUES
-('Realista', 'Tatuajes de estilo realista, con gran detalle y sombreado.'),
-('Geométrico', 'Tatuajes que combinan líneas precisas y formas geométricas.'),
-('Tradicional', 'Estilo de tatuaje clásico con contornos gruesos y colores sólidos.'),
-('Acuarela', 'Tatuajes con efecto de acuarela, creando sombras y colores difusos.'),
-('Minimalista', 'Diseños simples y pequeños, enfocados en líneas limpias y poco detalle.'),
-('Japonés', 'Estilo que incluye símbolos y patrones de la cultura japonesa.'),
-('Abstracto', 'Tatuajes que juegan con formas no representativas y creativas.'),
-('Neo-Tradicional', 'Una mezcla de estilo tradicional y modernidad, con detalles extra.'),
-('Tatuajes de retrato', 'Tatuajes realistas de personas o animales, con enfoque en el detalle facial.'),
-('Floral', 'Diseños de tatuajes que utilizan elementos de la naturaleza como flores.');
+DROP TABLE IF EXISTS `cotizaciones`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cotizaciones` (
+  `cotizacion_id` int NOT NULL AUTO_INCREMENT,
+  `usuario_id` int DEFAULT NULL,
+  `artista_id` int DEFAULT NULL,
+  `tatuaje_id` int DEFAULT NULL,
+  `descripcion` text,
+  `precio_estimado` decimal(10,2) DEFAULT NULL,
+  `estado` enum('pendiente','aceptada','rechazada') DEFAULT 'pendiente',
+  `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`cotizacion_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- Insertar datos en la tabla Tatuajes
-INSERT INTO Tatuajes (artista_id, categoria_id, imagen_tatuaje, descripcion, precio) VALUES
-(1, 1, '/Images/Artistas/FotoTatuador.jpeg', 'Tatuaje realista de una flor de loto.', 120.00),
-(2, 2, '/Images/Artistas/FotoTatuador.jpeg', 'Tatuaje geométrico abstracto.', 150.00),
-(3, 3, '/Images/Artistas/FotoTatuador.jpeg', 'Tatuaje tradicional de una calavera americana.', 100.00),
-(4, 4, '/Images/Artistas/FotoTatuador.jpeg', 'Tatuaje estilo acuarela de un pájaro en vuelo.', 200.00),
-(5, 5, '/Images/Artistas/FotoTatuador.jpeg', 'Tatuaje minimalista de una montaña.', 80.00),
-(6, 6, '/Images/Artistas/FotoTatuador.jpeg', 'Tatuaje japonés de un dragón.', 250.00),
-(7, 7, '/Images/Artistas/FotoTatuador.jpeg', 'Tatuaje abstracto con líneas curvadas.', 180.00),
-(8, 8, '/Images/Artistas/FotoTatuador.jpeg', 'Tatuaje neo-tradicional de una rosa.', 160.00),
-(9, 9, '/Images/Artistas/FotoTatuador.jpeg', 'Tatuaje de retrato realista de un animal.', 220.00),
-(10, 10, '/Images/Artistas/FotoTatuador.jpeg', 'Tatuaje floral de una peonía.', 90.00),
-(1, 1, '/Images/Artistas/FotoTatuador.jpeg', 'Tatuaje realista de un paisaje nocturno.', 130.00);
+--
+-- Dumping data for table `cotizaciones`
+--
+
+LOCK TABLES `cotizaciones` WRITE;
+/*!40000 ALTER TABLE `cotizaciones` DISABLE KEYS */;
+INSERT INTO `cotizaciones` VALUES (32,1,1,1,'Cotización para tatuaje de lobo realista en el brazo.',200.00,'aceptada','2024-11-08 16:54:59'),(33,2,1,2,'Cotización para tatuaje de águila tradicional en el pecho.',150.00,'aceptada','2024-11-08 16:54:59'),(34,3,1,1,'Cotización para tatuaje de lobo, con modificación en el diseño.',220.00,'rechazada','2024-11-08 16:54:59');
+/*!40000 ALTER TABLE `cotizaciones` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `cuidados_tatuaje`
+--
+
+DROP TABLE IF EXISTS `cuidados_tatuaje`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cuidados_tatuaje` (
+  `cuidado_id` int NOT NULL AUTO_INCREMENT,
+  `titulo` varchar(100) NOT NULL,
+  `descripcion` text,
+  `imagen` varchar(255) DEFAULT NULL,
+  `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`cuidado_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cuidados_tatuaje`
+--
+
+LOCK TABLES `cuidados_tatuaje` WRITE;
+/*!40000 ALTER TABLE `cuidados_tatuaje` DISABLE KEYS */;
+/*!40000 ALTER TABLE `cuidados_tatuaje` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `galeria_fotos`
+--
+
+DROP TABLE IF EXISTS `galeria_fotos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `galeria_fotos` (
+  `foto_id` int NOT NULL AUTO_INCREMENT,
+  `tatuaje_id` int DEFAULT NULL,
+  `ruta_foto` varchar(255) DEFAULT NULL,
+  `descripcion` varchar(255) DEFAULT NULL,
+  `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
+  `status` enum('publicada','despublicada') DEFAULT 'despublicada',
+  PRIMARY KEY (`foto_id`),
+  KEY `tatuaje_id` (`tatuaje_id`),
+  CONSTRAINT `galeria_fotos_ibfk_1` FOREIGN KEY (`tatuaje_id`) REFERENCES `tatuajes` (`tatuaje_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `galeria_fotos`
+--
+
+LOCK TABLES `galeria_fotos` WRITE;
+/*!40000 ALTER TABLE `galeria_fotos` DISABLE KEYS */;
+INSERT INTO `galeria_fotos` VALUES (1,NULL,'1730918860525.jpg','retratos','2024-11-06 12:47:40','publicada'),(2,NULL,'1730992860627.jpg','retratos','2024-11-07 09:21:00','publicada'),(3,NULL,'1731007126435.jpg','retratos','2024-11-07 13:18:46','publicada');
+/*!40000 ALTER TABLE `galeria_fotos` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `membresias`
+--
+
+DROP TABLE IF EXISTS `membresias`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `membresias` (
+  `membresia_id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) NOT NULL,
+  `descripcion` text,
+  `precio` decimal(10,2) DEFAULT NULL,
+  `beneficios` text,
+  `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`membresia_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `membresias`
+--
+
+LOCK TABLES `membresias` WRITE;
+/*!40000 ALTER TABLE `membresias` DISABLE KEYS */;
+INSERT INTO `membresias` VALUES (3,'as','as',1.00,'ad','2024-11-07 13:38:35');
+/*!40000 ALTER TABLE `membresias` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `preguntas_frecuentes`
+--
+
+DROP TABLE IF EXISTS `preguntas_frecuentes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `preguntas_frecuentes` (
+  `faq_id` int NOT NULL AUTO_INCREMENT,
+  `pregunta` varchar(255) NOT NULL,
+  `respuesta` text NOT NULL,
+  `categoria` varchar(100) DEFAULT NULL,
+  `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`faq_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `preguntas_frecuentes`
+--
+
+LOCK TABLES `preguntas_frecuentes` WRITE;
+/*!40000 ALTER TABLE `preguntas_frecuentes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `preguntas_frecuentes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `promociones`
+--
+
+DROP TABLE IF EXISTS `promociones`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `promociones` (
+  `promocion_id` int NOT NULL AUTO_INCREMENT,
+  `titulo` varchar(100) NOT NULL,
+  `descripcion` text,
+  `descuento` decimal(5,2) DEFAULT NULL,
+  `fecha_inicio` date DEFAULT NULL,
+  `fecha_fin` date DEFAULT NULL,
+  `estado` enum('activo','inactivo') DEFAULT 'activo',
+  `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`promocion_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `promociones`
+--
+
+LOCK TABLES `promociones` WRITE;
+/*!40000 ALTER TABLE `promociones` DISABLE KEYS */;
+/*!40000 ALTER TABLE `promociones` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tarjetas_regalo`
+--
+
+DROP TABLE IF EXISTS `tarjetas_regalo`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tarjetas_regalo` (
+  `tarjeta_id` int NOT NULL AUTO_INCREMENT,
+  `codigo` varchar(50) NOT NULL,
+  `valor` decimal(10,2) NOT NULL,
+  `estado` enum('activa','usada','expirada') DEFAULT 'activa',
+  `fecha_emision` date DEFAULT NULL,
+  `fecha_expiracion` date DEFAULT NULL,
+  `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`tarjeta_id`),
+  UNIQUE KEY `codigo` (`codigo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tarjetas_regalo`
+--
+
+LOCK TABLES `tarjetas_regalo` WRITE;
+/*!40000 ALTER TABLE `tarjetas_regalo` DISABLE KEYS */;
+/*!40000 ALTER TABLE `tarjetas_regalo` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tatuajes`
+--
+
+DROP TABLE IF EXISTS `tatuajes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tatuajes` (
+  `tatuaje_id` int NOT NULL AUTO_INCREMENT,
+  `artista_id` int DEFAULT NULL,
+  `categoria_id` int DEFAULT NULL,
+  `descripcion` text,
+  `precio` decimal(10,2) DEFAULT NULL,
+  `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`tatuaje_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tatuajes`
+--
+
+LOCK TABLES `tatuajes` WRITE;
+/*!40000 ALTER TABLE `tatuajes` DISABLE KEYS */;
+INSERT INTO `tatuajes` VALUES (15,1,1,'Tatuaje realista de un lobo en el brazo.',200.00,'2024-11-08 16:50:16'),(16,2,2,'Tatuaje tradicional de un águila en el pecho.',150.00,'2024-11-08 16:50:16');
+/*!40000 ALTER TABLE `tatuajes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `testimonios`
+--
+
+DROP TABLE IF EXISTS `testimonios`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `testimonios` (
+  `testimonio_id` int NOT NULL AUTO_INCREMENT,
+  `nombre_cliente` varchar(100) DEFAULT NULL,
+  `contenido` text,
+  `foto_cliente` varchar(255) DEFAULT NULL,
+  `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`testimonio_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `testimonios`
+--
+
+LOCK TABLES `testimonios` WRITE;
+/*!40000 ALTER TABLE `testimonios` DISABLE KEYS */;
+INSERT INTO `testimonios` VALUES (3,'Carlos Rodríguez','Me encantó la experiencia, el proceso fue rápido y muy efectivo. Definitivamente volveré.','carlos_rodriguez.jpg','2024-11-06 13:02:09'),(4,'Laura Martínez','Muy buen servicio. Agradezco el trato recibido y la calidad del producto que adquirí.','laura_martinez.jpg','2024-11-06 13:02:09'),(5,'Pedro Fernández','Fue un placer trabajar con ustedes. El resultado fue justo lo que necesitaba, y el personal fue muy amable.','pedro_fernandez.jpg','2024-11-06 13:02:09'),(9,'Laura Martínez','Excelente Muy buen servicio. Agradezco el trato recibido y la calidad del producto que adquirí.','laura_martinez.jpg','2024-11-06 13:05:36');
+/*!40000 ALTER TABLE `testimonios` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `usuarios`
+--
+
+DROP TABLE IF EXISTS `usuarios`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `usuarios` (
+  `usuario_id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `contraseña` varchar(255) NOT NULL,
+  `rol` enum('admin','editor') DEFAULT 'editor',
+  `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
+  `estado` enum('activo','inactivo') DEFAULT 'activo',
+  PRIMARY KEY (`usuario_id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `usuarios`
+--
+
+LOCK TABLES `usuarios` WRITE;
+/*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
+INSERT INTO `usuarios` VALUES (1,'Juan Pérez','juan.perez@example.com','hashed_password_1','admin','2024-11-01 10:30:00','activo'),(2,'Maria González','maria.gonzalez@example.com','hashed_password_2','editor','2024-11-02 11:00:00','activo'),(3,'Luis García','luis.garcia@example.com','hashed_password_3','editor','2024-11-03 09:00:00','inactivo'),(4,'Juan Pérez','juan.perez@email.com','contraseña123','admin','2024-11-08 16:42:00','activo'),(5,'Ana Gómez','ana.gomez@email.com','contraseña456','editor','2024-11-08 16:42:00','activo'),(6,'Carlos Ruiz','carlos.ruiz@email.com','contraseña789','editor','2024-11-08 16:42:00','inactivo');
+/*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `ventas_articulos`
+--
+
+DROP TABLE IF EXISTS `ventas_articulos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ventas_articulos` (
+  `articulo_id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) NOT NULL,
+  `descripcion` text,
+  `precio` decimal(10,2) DEFAULT NULL,
+  `stock` int DEFAULT '0',
+  `imagen` varchar(255) DEFAULT NULL,
+  `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`articulo_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ventas_articulos`
+--
+
+LOCK TABLES `ventas_articulos` WRITE;
+/*!40000 ALTER TABLE `ventas_articulos` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ventas_articulos` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping routines for database 'sitio_tatuajes'
+--
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2024-11-08 18:35:24
