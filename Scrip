@@ -86,18 +86,20 @@ CREATE TABLE Membresias (
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabla Citas
-CREATE TABLE Citas (
-    cita_id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT,
-    artista_id INT,
-    fecha DATETIME NOT NULL,
-    estado ENUM('pendiente', 'confirmada', 'completada', 'cancelada') DEFAULT 'pendiente',
-    descripcion TEXT,
-    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id),
-    FOREIGN KEY (artista_id) REFERENCES Artistas(artista_id)
+CREATE TABLE agenda_artista (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cotizacion_id INT NOT NULL,
+    artista_id INT NOT NULL,
+    fecha DATE NOT NULL,
+    hora TIME NOT NULL,
+    cliente VARCHAR(255),
+    status VARCHAR(50),
+    membresia VARCHAR(50),
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (cotizacion_id) REFERENCES cotizaciones(cotizacion_id)
 );
+
 
 -- Tabla Cotizaciones
 CREATE TABLE Cotizaciones (
