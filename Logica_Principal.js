@@ -252,6 +252,57 @@ app.post('/api/usar-tarjeta', (req, res) => {
     });
 });
 // ----------------------------------------------------------------------------------
+// Ruta para cargar artistas en combobox galeria
+app.get('/api/artistas', (req, res) => {
+    const query = 'SELECT artista_id, nombre FROM artistas';
+
+    connection.query(query, (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+        res.json(results);
+    });
+});
+
+// Ruta para consultar tatuajes por artistas
+app.get('/api/tatuajesPorArtista', (req, res) => {
+    const { artista_id } = req.query;
+
+    if (!artista_id) {
+        return res.status(400).json({ error: 'artista_id es requerido' });
+    }
+
+    const query = 'SELECT tatuaje_id FROM tatuajes WHERE artista_id = ?';
+    connection.query(query, [artista_id], (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+        res.json(results);
+    });
+});
+
+// Mostrar tatuajes por id tatujes
+app.get('/api/fotosPorTatuajes', (req, res) => {
+    const { tatuajeIds } = req.query;
+
+    if (!tatuajeIds || tatuajeIds.length === 0) {
+        return res.status(400).json({ error: 'Se requiere al menos un ID de tatuaje' });
+    }
+
+    const query = `
+        SELECT foto_id, tatuaje_id, ruta_foto, descripcion 
+        FROM galeria_fotos 
+        WHERE tatuaje_id IN (?) AND status = 'publicada' 
+        LIMIT 20
+    `;
+    connection.query(query, [tatuajeIds.split(',')], (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+        res.json(results);
+    });
+});
+// ----------------------------------------------------------------------------------
 // Crear el servidor y usar la app de express como manejador de peticiones
 const servidor = http.createServer(app);
 

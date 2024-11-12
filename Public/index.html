@@ -9,7 +9,7 @@
     <!-- Barra de Navegacion -->
     <nav>
         <a href="index.html">Inicio</a> |
-        <a href="#about">Acerca de</a> |
+        <a href="#about">ChatBot</a> |
         <a href="#services">Servicios</a> |
         <a href="#contact">Contacto</a> |
         <button onclick="mostrarLogin()">Iniciar Sesión</button>
@@ -58,6 +58,17 @@
         <div id="tarjetas-regalo-container"></div>
     </section>
 
+    <!-- Sección de Filtrado de Tatuajes por Artista -->
+    <section>
+        <h2>Galería de Tatuajes</h2>
+        <select id="artistasComboBox">
+            <option value="">Selecciona un Artista</option>
+        </select>
+        <div id="galeriaFotos" class="galeria-fotos">
+            <!-- Las fotos se agregarán aquí dinámicamente -->
+        </div>
+    </section>
+
     <!-- Scripts -->    
     <script src="ScriptLogin.js"></script>
     <script src="ScriptArtistas.js"></script>
@@ -65,5 +76,6 @@
     <script src="ScriptsMembresias.js"></script>
     <script src="ScriptBeneficios.js"></script>
     <script src="ScriptTarjetasRegalo.js"></script>
+    <script src="ScriptGaleriaFotos.js"></script>
 </body>
 </html>
