@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagina Cliente</title>
+</head>
+<body>
+    <h1>Bienvenido al Panel del Cliente:</h1>
+
+    <!-- Sección de Filtrado de Tatuajes por Artista -->
+    <section>
+        <h2>Cotizaciones</h2>
+        <select id="artistasComboBox">
+            <option value="">Selecciona un Artista</option>
+        </select>
+        
+        <div id="galeriaFotos" class="galeria-fotos">
+            <!-- Las fotos se agregarán aquí dinámicamente -->
+        </div>
+        
+        <div id="formularioSeleccion">
+            <h3>Información de Contacto</h3>
+            <label for="correo">Correo:</label>
+            <input type="email" id="correo" placeholder="Ingresa tu correo" required><br><br>
+            <label for="descripcion">Descripción:</label>
+            <textarea id="descripcion" placeholder="Ingresa una descripción" required></textarea><br><br>
+        </div>
+        
+        <!-- Botón de Enviar -->
+        <button id="enviarBtn">Enviar</button>
+    </section>
+
+    <!-- Botón de Cerrar Sesión -->
+    <button onclick="cerrarSesion()">Cerrar Sesión</button>
+
+    <!-- Scripts -->
+    <script src="ScriptCotizaciones.js"></script>
+</body>
+<script>
+    function cerrarSesion() {
+        // Aquí puedes agregar la lógica para cerrar la sesión (si es necesario)
+        
+        // Redirigir a la página de inicio
+        window.location.href = "index.html";
+    }
+</script>
+</html>

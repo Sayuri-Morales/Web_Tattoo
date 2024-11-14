@@ -5,6 +5,7 @@ const http = require('http');
 const mysql = require('mysql2');
 const express = require('express');
 const querystring = require('querystring');
+const nodemailer = require('nodemailer');
 
 // Inicializa la aplicación de express
 const app = express();
@@ -41,11 +42,23 @@ const mime = {
 // Configurar Express para manejar datos JSON
 app.use(express.json());
 // ----------------------------------------------------------------------------------
+// Variable para almacenas el rol y numero de
+let verificationCode = null; 
+let userRol = null;  
+
+// Configuración de transporte de correo con nodemailer
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'urbanexcontruccionescr@gmail.com',
+        pass: 'mkrd uffp odkf riaz' 
+    }
+});
+
 // Ruta para el login
 app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
 
-    // Consultar el usuario en la base de datos
     connection.query('SELECT * FROM Usuarios WHERE email = ?', [email], (error, results) => {
         if (error) {
             console.error('Error al consultar la base de datos:', error);
@@ -58,23 +71,46 @@ app.post('/api/login', (req, res) => {
 
         const user = results[0];
 
-        // Validar la contraseña
         if (user.contraseña !== password) {
             return res.json({ success: false, message: 'Contraseña incorrecta' });
         }
 
-        // Validar si el usuario está activo
         if (user.estado !== 'activo') {
             return res.json({ success: false, message: 'Cuenta desactivada' });
         }
 
-        // Devolver la información del usuario
-        res.json({
-            success: true,
-            nombre: user.nombre,
-            rol: user.rol
+        // Generar un código aleatorio de 6 dígitos
+        verificationCode = Math.floor(100000 + Math.random() * 900000);
+        userRol = user.rol;  // Almacena el rol del usuario para usarlo en la verificación
+
+        // Enviar el código al correo del usuario
+        const mailOptions = {
+            from: 'tuemail@gmail.com',
+            to: email,
+            subject: 'Código de verificación',
+            text: `Tu código de verificación de Tatuajes JJS es: ${verificationCode}`
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error al enviar el correo:', error);
+                return res.status(500).json({ success: false, message: 'Error al enviar el código de verificación' });
+            }
+
+            res.json({ success: true, message: 'Código de verificación enviado', nombre: user.nombre });
         });
     });
+});
+
+// Ruta para verificar el código de autenticación
+app.post('/api/verify-code', (req, res) => {
+    const { code } = req.body;
+
+    if (parseInt(code) === verificationCode) {
+        res.json({ success: true, rol: userRol });  // Devuelve el rol si el código es correcto
+    } else {
+        res.json({ success: false, message: 'Código incorrecto' });
+    }
 });
 // ----------------------------------------------------------------------------------
 // Ruta para obtener los datos de los artistas
@@ -224,7 +260,7 @@ app.post('/api/usar-tarjeta', (req, res) => {
     };
 
     // Ruta donde se guardará el archivo JSON
-    const rutaArchivo = path.join(__dirname, 'Public', 'ArchivosJson', 'Informacion_Tarjetas.json');
+    const rutaArchivo = path.join(__dirname, 'Public', 'ArchivosJson', 'TarjetasRegalos.json');
 
     // Leer el archivo JSON existente, o crear uno nuevo si no existe
     fs.readFile(rutaArchivo, 'utf8', (err, data) => {
@@ -303,6 +339,208 @@ app.get('/api/fotosPorTatuajes', (req, res) => {
     });
 });
 // ----------------------------------------------------------------------------------
+// Cotizaciones
+// Supongamos que estás usando Express en el servidor
+app.get('/api/obtenerUsuarioIdPorCorreo', (req, res) => {
+    const correo = req.query.correo;
+
+    if (!correo) {
+        return res.status(400).json({ error: 'Correo es requerido' });
+    }
+
+    const query = 'SELECT usuario_id FROM usuarios WHERE email = ?';
+    connection.query(query, [correo], (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
+        if (results.length > 0) {
+            return res.json({ usuario_id: results[0].usuario_id });
+        } else {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+    });
+});
+
+app.post('/api/guardarCotizacion', (req, res) => {
+    const { usuario_id, artista_id, tatuaje_id, descripcion } = req.body;
+
+    if (!usuario_id || !artista_id || !tatuaje_id || !descripcion) {
+        return res.status(400).json({ error: 'Todos los campos son necesarios' });
+    }
+
+    const query = 'INSERT INTO cotizaciones (usuario_id, artista_id, tatuaje_id, descripcion) VALUES (?, ?, ?, ?)';
+    connection.query(query, [usuario_id, artista_id, tatuaje_id, descripcion], (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+        res.json({ success: true, message: 'Cotización guardada con éxito' });
+    });
+});
+// ----------------------------------------------------------------------------------
+// Tienda
+// Ruta para obtener los artículos
+app.get('/api/ventas_articulos', (req, res) => {
+    connection.query('SELECT * FROM ventas_articulos', (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+        res.json(results);
+    });
+});
+
+// Ruta para guardar el carrito
+app.post('/api/guardar_carrito', (req, res) => {
+    const carrito = req.body.tienda;
+
+    // Directorio donde se guardará el archivo JSON
+    const dir = path.join(__dirname, 'Public', 'ArchivosJson');
+    
+    // Verificar si la carpeta existe, si no, crearla
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true }); // Crea la carpeta si no existe
+    }
+
+    // Definir la ruta completa del archivo donde se guardará el carrito
+    const filePath = path.join(dir, 'CarritoCompras.json');
+
+    // Guardar el carrito en un archivo JSON
+    fs.writeFile(filePath, JSON.stringify(carrito, null, 2), (err) => {
+        if (err) {
+            return res.status(500).json({ error: 'Error al guardar el carrito' });
+        }
+        res.json({ message: 'Carrito guardado correctamente en Public/ArchivosJson/' });
+    });
+});
+// ----------------------------------------------------------------------------------
+const dir = path.join(__dirname, 'Public', 'ArchivosJson');
+
+// Ruta para leer datos del archivo CarritoCompras.json
+app.get('/api/carritoCompras', (req, res) => {
+    fs.readFile(path.join(dir, 'CarritoCompras.json'), 'utf8', (err, data) => {
+        if (err) {
+            return res.status(500).json({ error: 'Error al leer el archivo CarritoCompras.json' });
+        }
+        res.json(JSON.parse(data));
+    });
+});
+
+// Ruta para leer datos del archivo TarjetasRegalos.json
+app.get('/api/tarjetasRegalos', (req, res) => {
+    fs.readFile(path.join(dir, 'TarjetasRegalos.json'), 'utf8', (err, data) => {
+        if (err) {
+            return res.status(500).json({ error: 'Error al leer el archivo TarjetasRegalos.json' });
+        }
+        res.json(JSON.parse(data));
+    });
+});
+
+// Ruta para leer datos del archivo MembresiasSeleccionadas.json
+app.get('/api/membresiasSeleccionadas', (req, res) => {
+    fs.readFile(path.join(dir, 'MembresiasSeleccionadas.json'), 'utf8', (err, data) => {
+        if (err) {
+            return res.status(500).json({ error: 'Error al leer el archivo MembresiasSeleccionadas.json' });
+        }
+        res.json(JSON.parse(data));
+    });
+});
+// ----------------------------------------------------------------------------------
+// Carrito de Compras
+// Directorio de los archivos JSON
+app.post('/api/procesarPago', (req, res) => {
+    const { numeroTarjeta, cvv, fechaVencimiento, correo } = req.body;  // Obtener los datos del cuerpo de la solicitud
+
+    // Función para obtener el usuario ID por correo
+    function obtenerUsuarioIdPorCorreo(correo) {
+        return new Promise((resolve, reject) => {
+            const query = 'SELECT usuario_id FROM usuarios WHERE email = ?';
+            connection.query(query, [correo], (error, results) => {
+                if (error) {
+                    reject(error);
+                } else if (results.length > 0) {
+                    resolve(results[0].usuario_id); // Devolver el usuario_id
+                } else {
+                    reject('Usuario no encontrado');
+                }
+            });
+        });
+    }
+
+    // Leer los archivos JSON
+    function leerArchivo(nombreArchivo) {
+        const rutaArchivo = path.join(dir, nombreArchivo);
+        return new Promise((resolve, reject) => {
+            fs.readFile(rutaArchivo, 'utf8', (error, data) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(JSON.parse(data));
+                }
+            });
+        });
+    }
+
+    // Función para insertar en la base de datos
+    async function insertarProductos() {
+        try {
+            // Leer los datos de los archivos
+            const carritoCompras = await leerArchivo('CarritoCompras.json');
+            const membresiasSeleccionadas = await leerArchivo('MembresiasSeleccionadas.json');
+            const tarjetasRegalos = await leerArchivo('TarjetasRegalos.json');
+
+            // Obtener el usuario_id basado en el correo
+            const usuarioId = await obtenerUsuarioIdPorCorreo(correo);  // Obtener el usuario ID
+
+            const promocion = 'Promocion X';
+            const fechaCompra = new Date();
+
+            // Insertar cada producto en la tabla carrito_compras
+            for (let producto of carritoCompras) {
+                const precioFinal = producto.precio; // Suponiendo que no hay descuento por ahora
+                const cantidad = 1; // Suponiendo que la cantidad por defecto es 1
+                const ventasArticulos = JSON.stringify(producto);
+                const tarjetasRegalo = JSON.stringify(tarjetasRegalos); // Asumimos que todas las tarjetas son aplicables
+
+                const sql = `
+                    INSERT INTO carrito_compras (usuario_id, producto_id, cantidad, promocion, membresia, ventas_articulos, tarjetas_regalo, fecha_agregado, estado, fecha_compra, precio_final)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), 'activo', ?, ?)
+                `;
+
+                // Para los valores de membresia, tomamos el primer objeto (puedes modificar esto según tu lógica)
+                const membresia = membresiasSeleccionadas.length > 0 ? parseFloat(membresiasSeleccionadas[0].precio) : null;
+
+                // Ejecutar la inserción
+                connection.query(sql, [usuarioId, producto.id, cantidad, promocion, membresia, ventasArticulos, tarjetasRegalo, fechaCompra, precioFinal], (error, results) => {
+                    if (error) {
+                        console.error('Error insertando producto:', error);
+                    } else {
+                        console.log('Producto insertado con ID:', results.insertId);
+                    }
+                });
+            }
+
+            // Vaciar los archivos después de insertar los datos
+            vaciarArchivos();
+
+        } catch (error) {
+            console.error('Error al leer los archivos o insertar productos:', error);
+        }
+    }
+
+    // Llamar a la función para insertar productos
+    insertarProductos();
+
+    res.json({ success: true });  // Responder con éxito para este ejemplo
+});
+// ---------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
 // Crear el servidor y usar la app de express como manejador de peticiones
 const servidor = http.createServer(app);
 

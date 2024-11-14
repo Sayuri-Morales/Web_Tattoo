@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras</title>
+</head>
+<body>
+    <h1>Carrito de Compras</h1>
+    <div id="carrito"></div>
+
+    <h1>Tarjetas de Regalo</h1>
+    <div id="tarjetas"></div>
+
+    <h1>Membresías Seleccionadas</h1>
+    <div id="membresias"></div>
+
+    <!-- Botón de Comprar -->
+    <button id="btnComprar" style="margin-top: 20px; padding: 10px 20px; font-size: 16px;">
+        Comprar
+    </button>
+
+    <!-- Lugar donde se mostrará el total general -->
+    <div id="totalGeneral"></div>
+
+    <!-- Cargar el archivo de script externo -->
+    <script src="ScriptCarritoCompras.js"></script>
+
+    <!-- Botón de Cerrar Sesión -->
+    <button onclick="cerrarSesion()">Atras</button>
+
+    <script>
+        function cerrarSesion() {
+            // Aquí puedes agregar la lógica para cerrar la sesión (si es necesario)
+            
+            // Redirigir a la página de inicio
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>

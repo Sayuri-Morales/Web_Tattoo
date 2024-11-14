@@ -408,7 +408,7 @@ CREATE TABLE `usuarios` (
 
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-INSERT INTO `usuarios` VALUES (1,'Juan Pérez','juan.perez@example.com','hashed_password_1','admin','2024-11-01 10:30:00','activo'),(2,'Maria González','maria.gonzalez@example.com','hashed_password_2','editor','2024-11-02 11:00:00','activo'),(3,'Luis García','luis.garcia@example.com','hashed_password_3','editor','2024-11-03 09:00:00','inactivo'),(4,'Juan Pérez','juan.perez@email.com','contraseña123','admin','2024-11-08 16:42:00','activo'),(5,'Ana Gómez','ana.gomez@email.com','contraseña456','editor','2024-11-08 16:42:00','activo'),(6,'Carlos Ruiz','carlos.ruiz@email.com','contraseña789','editor','2024-11-08 16:42:00','inactivo');
+INSERT INTO `usuarios` VALUES (1,'Javier','208130157@cuc.cr','hashed_password_1','admin','2024-11-01 10:30:00','activo'),(2,'Sayuri Morales','305390779@cuc.cr','hashed_password_2','editor','2024-11-02 11:00:00','activo'),(3,'Luis García','luis.garcia@example.com','hashed_password_3','editor','2024-11-03 09:00:00','inactivo'),(4,'Juan Pérez','juan.perez@email.com','contraseña123','admin','2024-11-08 16:42:00','activo'),(5,'Ana Gómez','ana.gomez@email.com','contraseña456','editor','2024-11-08 16:42:00','activo'),(6,'Carlos Ruiz','carlos.ruiz@email.com','contraseña789','editor','2024-11-08 16:42:00','inactivo');
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 
