@@ -147,11 +147,12 @@ document.getElementById('artistasComboBox').addEventListener('change', (event) =
 });
 
 // Función para manejar el envío del formulario
+// Función para manejar el envío del formulario
 document.getElementById('enviarBtn').addEventListener('click', () => {
     // Obtener el correo y la descripción ingresada por el usuario
     const correo = document.getElementById('correo').value;
     const descripcion = document.getElementById('descripcion').value;
-    
+
     // Verificar si los campos requeridos están completos
     if (!correo || !descripcion) {
         alert('Por favor, completa todos los campos.');
@@ -206,6 +207,9 @@ document.getElementById('enviarBtn').addEventListener('click', () => {
                 .then(data => {
                     alert('Cotización enviada con éxito');
                     console.log('Respuesta del servidor:', data);
+
+                    // Limpiar el formulario
+                    limpiarFormulario();
                 })
                 .catch(error => {
                     console.error('Error al enviar la cotización:', error);
@@ -219,6 +223,23 @@ document.getElementById('enviarBtn').addEventListener('click', () => {
             console.error('Error al obtener el usuario:', error);
             alert('Hubo un problema al verificar el correo. Intenta nuevamente.');
         });
+
+        // Función para limpiar el formulario
+        function limpiarFormulario() {
+            // Limpiar campos de texto
+            document.getElementById('correo').value = '';
+            document.getElementById('descripcion').value = '';
+
+            // Desmarcar todos los checkboxes
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+
+            // Opcional: Limpiar la galería o el ComboBox
+            document.getElementById('galeriaFotos').innerHTML = '';
+            document.getElementById('artistasComboBox').value = '';
+        }
 });
 
 // Llama a la función al cargar la página

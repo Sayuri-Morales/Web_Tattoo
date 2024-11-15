@@ -8,7 +8,6 @@
 <body>
     <h1>Bienvenido al Panel del Cliente:</h1>
 
-    <!-- Sección de Filtrado de Tatuajes por Artista -->
     <section>
         <h2>Cotizaciones</h2>
         <select id="artistasComboBox">
@@ -20,21 +19,48 @@
         </div>
         
         <div id="formularioSeleccion">
-            <h3>Información de Contacto</h3>
-            <label for="correo">Correo:</label>
-            <input type="email" id="correo" placeholder="Ingresa tu correo" required><br><br>
-            <label for="descripcion">Descripción:</label>
-            <textarea id="descripcion" placeholder="Ingresa una descripción" required></textarea><br><br>
+            <h3>Datos Personales:</h3>
+            <label for="correoCotizacion">Correo:</label>
+            <input type="email" id="correoCotizacion" placeholder="Ingresa tu correo" required><br><br>
+            <label for="descripcionCotizacion">Descripción:</label>
+            <textarea id="descripcionCotizacion" placeholder="Ingresa una descripción" required></textarea><br><br>
         </div>
         
         <!-- Botón de Enviar -->
         <button id="enviarBtn">Enviar</button>
     </section>
 
+    <!-- Sección de Agendar Cita -->
+    <section>
+        <h2>Agendar Cita</h2>
+    
+        <!-- Selección de Artista -->
+        <label for="artistasAgendaComboBox">Selecciona un Artista</label>
+        <select id="artistasAgendaComboBox">
+            <option value="">Selecciona un Artista</option>
+        </select>
+    
+        <!-- Calendario -->
+        <label for="fechaCita">Selecciona la Fecha</label>
+        <input type="datetime-local" id="fechaCita" required><br><br>
+    
+        <!-- Correo -->
+        <label for="correoAgenda">Correo:</label>
+        <input type="email" id="correoAgenda" placeholder="Ingresa tu correo" required><br><br>
+    
+        <!-- Descripción -->
+        <label for="descripcionAgenda">Descripción del Tatuaje:</label>
+        <textarea id="descripcionAgenda" placeholder="Ingresa una descripción del tatuaje" required></textarea><br><br>
+    
+        <!-- Botón de Enviar -->
+        <button id="agendarCitaBtn">Agendar Cita</button>
+    </section>
+    
     <!-- Botón de Cerrar Sesión -->
     <button onclick="cerrarSesion()">Cerrar Sesión</button>
 
     <!-- Scripts -->
+    <script src="ScriptCitas.js"></script>
     <script src="ScriptCotizaciones.js"></script>
 </body>
 <script>

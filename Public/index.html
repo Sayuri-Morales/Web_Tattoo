@@ -74,6 +74,87 @@
         </div>
     </section>
 
+    <!-- Sección de Filtrado de Categorias de Tatuajes -->
+    <section>
+        <h2>Categorias de Tatuajes</h2>
+        <div>
+            <label for="tatuadoresComboBox">Selecciona un Artista:</label>
+            <select id="tatuadoresComboBox">
+                <option value="">Selecciona un Artista</option>
+                <!-- Los artistas se agregarán aquí dinámicamente -->
+            </select>
+        </div>
+        <div>
+            <label for="categoriasComboBox">Selecciona una Categoría:</label>
+            <select id="categoriasComboBox">
+                <option value="">Selecciona una Categoría</option>
+                <!-- Las categorías se agregarán aquí dinámicamente -->
+            </select>
+        </div>
+        <div id="CategoriasTatuajes">
+            <!-- Las fotos se mostrarán aquí -->
+        </div>
+    </section>
+    
+    <!-- Combobox para seleccionar categoría -->
+    <section>
+        <h1>Preguntas Frecuentes</h1>
+        <h2>Selecciona una Categoría</h2>
+        <select id="categoriasComboBoxPreguntas">
+            <option value="">Selecciona una Categoría</option>
+        </select>
+    </section>
+
+    <!-- Mostrar todas las preguntas -->
+    <section>
+        <h2>Preguntas Frecuentes</h2>
+        <div id="preguntas-container">
+            <!-- Las preguntas se cargarán aquí dinámicamente -->
+        </div>
+    </section>
+
+    <!-- Formulapreguntas_frecuentesrio para agregar una nueva pregunta -->
+    <section>
+        <h2>¿Tienes una nueva pregunta? ¡Hazla aquí!</h2>
+        <form id="new-question-form">
+            <label for="new-question">Pregunta:</label>
+            <input type="text" id="new-question" required>
+            <button type="submit">Enviar Pregunta</button>
+        </form>
+    </section>
+
+    <!-- Mostrar testimonios existentes -->
+    <section id="testimonios-container">
+        <h1>Testimonios</h1>
+        <h2>Testimonios de Nuestros Clientes</h2>
+        <div id="testimonios-list">
+            <!-- Los testimonios se cargarán aquí dinámicamente -->
+        </div>
+    </section>
+
+    <!-- Formulario para agregar un nuevo testimonio -->
+    <section>
+        <h2>¡Comparte tu Testimonio!</h2>
+        <form id="new-testimonio-form">
+            <label for="nombre-cliente">Tu Nombre:</label>
+            <input type="text" id="nombre-cliente" required>
+            
+            <label for="contenido-testimonio">Tu Testimonio:</label>
+            <textarea id="contenido-testimonio" required></textarea>
+
+            <button type="submit">Enviar Testimonio</button>
+        </form>
+    </section>
+
+    <!-- Sección de Cuidados Tatuajes -->
+    <section id="cuidados-container">
+        <h1>Cuidados de Tatuajes</h1>
+        <h2>Recomendaciones para Cuidar tu Tatuaje</h2>
+        <div id="cuidados-list"></div>
+            <!-- Los cuidados se cargarán aquí dinámicamente -->
+        </div>
+    </section>
+    
     <!-- Scripts -->    
     <script src="ScriptLogin.js"></script>
     <script src="ScriptArtistas.js"></script>
@@ -82,5 +163,9 @@
     <script src="ScriptBeneficios.js"></script>
     <script src="ScriptTarjetasRegalo.js"></script>
     <script src="ScriptGaleriaFotos.js"></script>
+    <script src="ScriptCategoriaTatuajes.js"></script>
+    <script src="ScriptPreguntasFrecuentes.js"></script>
+    <script src="ScriptTestiminios.js"></script>
+    <script src="ScriptCuidadosTatuajes.js"></script>
 </body>
 </html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artistas</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Artistas</h1>
+    <div id="artistas-list"></div>
+
+    <div id="calificar">
+        <h2>Califica a un Artista</h2>
+        <form id="calificar-form">
+            <label for="artista">Selecciona un Artista:</label>
+            <select id="artista" name="artista">
+                <!-- Opciones de artistas serán cargadas aquí -->
+            </select>
+
+            <label for="calificacion">Calificación (1-5):</label>
+            <input type="number" id="calificacion" name="calificacion" min="1" max="5" required>
+
+            <button type="submit">Enviar Calificación</button>
+        </form>
+    </div>
+
+    <script src="ScriptCalificacionArtistas.js"></script>
+</body>
+</html>

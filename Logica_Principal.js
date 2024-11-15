@@ -533,14 +533,317 @@ app.post('/api/procesarPago', (req, res) => {
     res.json({ success: true });  // Responder con éxito para este ejemplo
 });
 // ---------------------------------------------------------------------------------
+// Categorias de Tatuajes:
+// Ruta para obtener los tatuadores
+app.get('/api/tatuadores', (req, res) => {
+    connection.query('SELECT artista_id, nombre FROM artistas', (error, results) => {
+        if (error) {
+            console.error('Error al consultar los tatuadores:', error);
+            return res.status(500).json({ success: false, message: 'Error en el servidor al consultar los tatuadores' });
+        }
+        res.json(results);
+    });
+});
 
+// Ruta para obtener las categorías de tatuajes
+app.get('/api/categorias', (req, res) => {
+    connection.query('SELECT categoria_id, nombre FROM categorias_tatuajes', (error, results) => {
+        if (error) {
+            console.error('Error al consultar las categorías:', error);
+            return res.status(500).json({ success: false, message: 'Error en el servidor al consultar las categorías' });
+        }
+        res.json(results);
+    });
+});
 
+// Ruta para obtener los tatuajes filtrados por artista y categoría
+app.get('/api/tatuajes', (req, res) => {
+    const { artista_id, categoria_id } = req.query;
 
+    // Verificar si ambos parámetros están presentes
+    if (!artista_id || !categoria_id) {
+        return res.status(400).json({ success: false, message: 'Faltan parámetros de filtro' });
+    }
 
+    // Consulta SQL para obtener los tatuajes filtrados con un máximo de 20 resultados
+    const query = `
+        SELECT tatuaje_id, descripcion, precio, fecha_creacion
+        FROM tatuajes
+        WHERE artista_id = ? AND categoria_id = ?
+        LIMIT 20
+    `;
 
+    connection.query(query, [artista_id, categoria_id], (error, results) => {
+        if (error) {
+            console.error('Error al consultar los tatuajes:', error);
+            return res.status(500).json({ success: false, message: 'Error en el servidor al consultar los tatuajes' });
+        }
 
+        // Ahora obtenemos las fotos de los tatuajes filtrados que tengan el estado 'publicada'
+        const tatuajesConFotos = [];
+        let tatuajesProcesados = 0;
 
+        results.forEach(tatuaje => {
+            const fotoQuery = `
+                SELECT foto_id, ruta_foto, descripcion
+                FROM galeria_fotos
+                WHERE tatuaje_id = ? AND status = 'publicada'
+            `;
+            
+            connection.query(fotoQuery, [tatuaje.tatuaje_id], (error, fotos) => {
+                if (error) {
+                    console.error('Error al consultar las fotos:', error);
+                    return res.status(500).json({ success: false, message: 'Error al consultar las fotos' });
+                }
 
+                tatuajesConFotos.push({
+                    ...tatuaje,
+                    fotos: fotos
+                });
+
+                tatuajesProcesados++;
+
+                // Cuando todos los tatuajes han sido procesados, enviar la respuesta
+                if (tatuajesProcesados === results.length) {
+                    res.json(tatuajesConFotos);
+                }
+            });
+        });
+    });
+});
+// ---------------------------------------------------------------------------------
+// Preguntas Frecuentes
+// Ruta para obtener las categorías únicas
+app.get('/api/categoriasPreguntas', (req, res) => {
+    connection.query('SELECT DISTINCT categoria FROM preguntas_frecuentes', (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+        // Devolvemos las categorías como un array de strings
+        const categorias = results.map(row => row.categoria);
+        res.json(categorias); 
+    });
+});
+
+// Ruta para obtener todas las preguntas frecuentes, filtradas por categoría si es necesario
+app.get('/api/preguntas', (req, res) => {
+    const categoria = req.query.categoria; // Obtener el parámetro de categoría
+    let query = 'SELECT * FROM preguntas_frecuentes';
+
+    // Si se proporciona una categoría, filtrar por ella
+    if (categoria) {
+        query += ' WHERE categoria = ?';
+    }
+
+    connection.query(query, [categoria], (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+        res.json(results); // Devolvemos las preguntas (filtradas si es necesario)
+    });
+});
+
+app.post('/api/agregar-pregunta', (req, res) => {
+    const { pregunta } = req.body;
+    
+    // Asegurarnos de que la pregunta no esté vacía
+    if (!pregunta || pregunta.trim() === '') {
+        return res.status(400).json({ error: 'Pregunta no válida' });
+    }
+
+    // Se inserta una respuesta predeterminada
+    const respuesta = 'Pendiente';
+
+    const query = 'INSERT INTO preguntas_frecuentes (pregunta, respuesta) VALUES (?, ?)';
+    connection.query(query, [pregunta, respuesta], (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+        res.json({ success: true });
+    });
+});
+// ---------------------------------------------------------------------------------
+// Rutas para obtener y agregar testimonios
+app.get('/api/testimonios', (req, res) => {
+    connection.query('SELECT * FROM testimonios ORDER BY fecha_creacion DESC LIMIT 10', (error, results) => {
+        if (error) {
+            console.error('Error al obtener testimonios:', error);
+            return res.status(500).json({ error: 'Error al obtener los testimonios' });
+        }
+
+        // Para cada testimonio, comprobamos si la foto_cliente está vacía o es null
+        const testimoniosConFoto = results.map(testimonio => {
+            // Si no tiene foto, asignamos la foto predeterminada
+            if (!testimonio.foto_cliente || testimonio.foto_cliente.trim() === '') {
+                testimonio.foto_cliente = '/Images/Testimonios/IconoPersona.jpg';
+            }
+            return testimonio;
+        });
+
+        // Devolvemos los testimonios con las fotos actualizadas
+        res.json(testimoniosConFoto);
+    });
+});
+
+app.post('/api/agregar-testimonio', (req, res) => {
+    const { nombre_cliente, contenido } = req.body;
+
+    if (!nombre_cliente || nombre_cliente.trim() === '' || !contenido || contenido.trim() === '') {
+        return res.status(400).json({ error: 'Nombre y contenido son obligatorios' });
+    }
+
+    const query = 'INSERT INTO testimonios (nombre_cliente, contenido) VALUES (?, ?)';
+    connection.query(query, [nombre_cliente, contenido], (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: 'Error al agregar el testimonio' });
+        }
+        res.json({ success: true });
+    });
+});
+// ---------------------------------------------------------------------------------
+// Cuidados Tattos
+app.get('/api/cuidados', (req, res) => {
+    connection.query('SELECT * FROM cuidados_tatuaje ORDER BY fecha_creacion DESC LIMIT 10', (error, results) => {
+        if (error) {
+            console.error('Error al obtener los cuidados:', error);
+            return res.status(500).json({ error: 'Error al obtener los cuidados' });
+        }
+
+        res.json(results); // Devolver los cuidados tal como están en la base de datos
+    });
+});
+
+// Almacenamiento temporal de likes (en memoria)
+const likes = {};
+
+// Ruta para manejar los likes
+app.post('/api/cuidados/like/:id', (req, res) => {
+    const cuidadoId = req.params.id;
+
+    // Incrementar los likes para la recomendación
+    if (!likes[cuidadoId]) {
+        likes[cuidadoId] = 1; // Inicializar si no existe
+    } else {
+        likes[cuidadoId]++;
+    }
+
+    res.json({ likes: likes[cuidadoId] });
+});
+// ---------------------------------------------------------------------------------
+app.get('/api/artistasAgenda', (req, res) => {
+    const query = 'SELECT artista_id, nombre FROM artistas';
+
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error("Error en la consulta:", error);
+            return res.status(500).json({ error: error.message });
+        }
+        res.json(results);  // Devuelve los resultados como JSON
+    });
+});
+
+// Obtener usuario por correo
+app.get('/api/usuarioPorCorreo', (req, res) => {
+    const correo = req.query.correo;
+    if (!correo) {
+        return res.status(400).json({ error: 'Correo requerido' });
+    }
+
+    const query = 'SELECT usuario_id FROM usuarios WHERE email = ?';
+    connection.query(query, [correo], (error, results) => {
+        if (error) {
+            console.error("Error en la consulta:", error);
+            return res.status(500).json({ error: error.message });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json(null); // Usuario no encontrado
+        }
+
+        res.json(results[0]); // Devuelve el usuario encontrado
+    });
+});
+
+// Agendar cita y enviar correo
+app.post('/api/agendarCita', (req, res) => {
+    const { usuario_id, artista_id, fecha, descripcion } = req.body;
+
+    if (!usuario_id || !artista_id || !fecha || !descripcion) {
+        return res.status(400).json({ error: 'Todos los campos son requeridos' });
+    }
+
+    const query = 'INSERT INTO citas (usuario_id, artista_id, fecha, descripcion) VALUES (?, ?, ?, ?)';
+    connection.query(query, [usuario_id, artista_id, fecha, descripcion], (error, results) => {
+        if (error) {
+            console.error("Error al insertar la cita:", error);
+            return res.status(500).json({ error: error.message });
+        }
+
+        // Después de guardar la cita, obtener el correo del usuario
+        const getEmailQuery = 'SELECT email FROM usuarios WHERE usuario_id = ?';
+        connection.query(getEmailQuery, [usuario_id], (error, userResults) => {
+            if (error) {
+                console.error("Error al obtener el correo del usuario:", error);
+                return res.status(500).json({ error: error.message });
+            }
+
+            if (userResults.length === 0) {
+                return res.status(404).json({ error: 'Usuario no encontrado' });
+            }
+
+            const userEmail = userResults[0].email;
+
+            // Configuración del correo
+            const mailOptions = {
+                from: 'urbanexcontruccionescr@gmail.com',
+                to: userEmail,
+                subject: 'Confirmación de Cita Agendada',
+                text: `¡Hola!\n\nTu cita con el artista ha sido agendada con éxito.\n\nDetalles de tu cita:\n- Fecha: ${fecha}\n- Descripción: ${descripcion}\n\nGracias por confiar en nosotros.\n\nAtentamente,\nEl equipo de Urbanex`
+            };
+
+            // Enviar correo
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.error("Error al enviar el correo:", error);
+                    return res.status(500).json({ error: 'No se pudo enviar el correo' });
+                }
+                console.log('Correo enviado: ' + info.response);
+                res.json({ success: true, cita_id: results.insertId });
+            });
+        });
+    });
+});
+// ---------------------------------------------------------------------------------
+// Calificacion Artistas
+// Ruta para obtener los artistas (cambiada a /api/artistas_nuevos)
+app.get('/api/artistas_nuevos', (req, res) => {
+    connection.query('SELECT * FROM Artistas', (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+        res.json(results);
+    });
+});
+
+// Ruta para guardar calificaciones
+app.post('/api/calificar', (req, res) => {
+    const { artista_id, calificacion, fecha } = req.body;
+    
+    // Verificar los datos
+    if (!artista_id || !calificacion || !fecha) {
+        return res.status(400).json({ error: 'Faltan datos' });
+    }
+
+    // Insertar la calificación
+    const query = 'INSERT INTO Calificacion_Artistas (Nombre, Calificacion, Fecha) SELECT nombre, ?, ? FROM Artistas WHERE artista_id = ?';
+    connection.query(query, [calificacion, fecha, artista_id], (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+        res.json({ message: 'Calificación guardada' });
+    });
+});
+// ---------------------------------------------------------------------------------
 // Crear el servidor y usar la app de express como manejador de peticiones
 const servidor = http.createServer(app);
 

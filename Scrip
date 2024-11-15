@@ -454,3 +454,10 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2024-11-08 18:35:24
+CREATE TABLE Calificacion_Artistas (
+    id_CalificacionArtistas INT NOT NULL AUTO_INCREMENT,
+    Nombre VARCHAR(100),
+    Calificacion VARCHAR(100),
+    Fecha DATE,
+    PRIMARY KEY (id_CalificacionArtistas)
+);
